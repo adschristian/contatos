@@ -2,43 +2,29 @@
 
 session_start();
 
-if (array_key_exists('nome', $_GET) && $_GET['nome'] !== '') {
-    $contato = [];
-    $contato['nome'] = $_GET['nome'];
+require 'banco.php';
+require 'ajudantes.php';
 
-    if (array_key_exists('telefone', $_GET)) {
-        $contato['telefone'] = $_GET['telefone'];
-    } else {
-        $contato['telefone'] = '';
-    }
+$exibir_tabela = true;
 
-    if (array_key_exists('email', $_GET)) {
-        $contato['email'] = $_GET['email'];
-    } else {
-        $contato['email'] = '';
-    }
+$contato = pegar_dados();
 
-    if (array_key_exists('descricao', $_GET)) {
-        $contato['descricao'] = $_GET['descricao'];
-    } else {
-        $contato['descricao'] = '';
-    }
-    
-    if (array_key_exists('data_nascimento', $_GET)) {
-        $contato['data_nascimento'] = date('Y-m-d', $_GET['data_nascimento']);
-    } else {
-        $contato['data_nascimento'] = '';
-    }
-
-    $contato['favorito'] = $_GET['favorito'] ?: '';
-    
-
-    $_SESSION['contatos'][] = $contato;
+if ($contato) {
+    gravar_contato($conexao, $contato);
+    header('Location: contatos.php');
+    die();
 }
 
-$listaContatos = [];
-if (array_key_exists('contatos', $_SESSION)) {
-    $listaContatos = $_SESSION['contatos'];
-}
+$listaContatos = busca_contatos($conexao);
 
-include 'template.php';
+$contato = [
+    'id' => 0,
+    'nome' => '',
+    'telefone' => '',
+    'email' => '',
+    'descricao' => '',
+    'data_nascimento' => '',
+    'favorito' => 0
+];
+
+require 'template.php';
